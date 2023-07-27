@@ -38,6 +38,9 @@ const initQuestion = () => {
         case "Add Role":
           addRole();
           break;
+        case "Update Employee Role":
+          updateEmployeeRole();
+          break;
       }
     });
 };
@@ -94,6 +97,7 @@ const addDepartment = () => {
       }
     });
 };
+// Function adds role
 const addRole = () => {
   // let departments;
   let dept_id;
@@ -161,6 +165,79 @@ const addRole = () => {
   });
 };
 
+// Function add employee
+const addEmployee = () => {};
+// Function update employee role
+const updateEmployeeRole = () => {
+  //getting role data
+  new Promise((resolve, reject) => {
+    db.query(`SELECT id, title FROM role`, (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        let choices = result.map((el) => {
+          return { name: el["title"], value: el["id"] };
+        });
+        resolve(choices);
+      }
+    });
+  })
+    .then((roles) => {
+      return new Promise((resolve, reject) => {
+        db.query(
+          "SELECT first_name, last_name, id FROM employee",
+          (err, result) => {
+            if (err) {
+              console.log(err);
+            } else {
+              let employees = result.map((el) => {
+                return {
+                  name: `${el.first_name} ${el.last_name}`,
+                  value: `${el.id}`,
+                };
+              });
+              resolve({ roles: roles, employees: employees });
+            }
+          }
+        );
+      });
+    })
+    .then((response) => {
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            name: "employee_id",
+            choices: response.employees,
+            message: "Select employee to update the role: ",
+          },
+          {
+            type: "list",
+            name: "role_id",
+            choices: response.roles,
+            message:
+              "What role would you like to assign to the selected employee ?",
+          },
+        ])
+        .then((response) => {
+          return new Promise((resolve, reject) => {
+            db.query(
+              `UPDATE employee SET role_id=? WHERE id = ?`,
+              [response.role_id, response.employee_id],
+              (err, result) => {
+                err
+                  ? console.log(err)
+                  : resolve(`Change of Role was successful`);
+              }
+            );
+          });
+        })
+        .then((response) => {
+          console.log(response);
+          initQuestion();
+        });
+    });
+};
 // module.exports = questions;
 initQuestion();
 

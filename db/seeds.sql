@@ -5,7 +5,7 @@ VALUES ("Engineering"),
        ("Legal");
        
      /*How to get department name by department id */
-INSERT INTO   (title,department_id,salary)
+INSERT INTO role (title,department_id,salary)
 VALUES ("Lead Engineer",1,150000),
        ("Salesperson",3,80000),
        ("Account Manager",2, 160000),
