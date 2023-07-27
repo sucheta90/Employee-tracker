@@ -1,6 +1,6 @@
 const inquirer = require("inquirer");
-const cTable = require("console.table");
-const table = cTable.getTable;
+// const cTable = require("console.table");
+// const table = cTable.getTable;
 const db = require("./dbConnection");
 // Initial question
 const initQuestion = () => {
@@ -41,39 +41,69 @@ const initQuestion = () => {
         case "Update Employee Role":
           updateEmployeeRole();
           break;
+        case "Add Employee":
+          addEmployee();
+          break;
+        case "Quit":
+          break;
       }
     });
 };
 
 // Function queries all employees
 const viewAllEmployee = () => {
-  db.query(
-    "SELECT e.id, e.first_name, e.last_name, r.title , d.dept_name, r.salary, e.manager_id  FROM employee as e INNER JOIN role as r ON r.id = e.role_id INNER JOIN department as d ON d.id = r.department_id ",
-    (err, result) => {
-      err ? console.log(err) : console.table(`\n`, result);
-    }
-  );
-  return initQuestion();
+  new Promise((resolve, reject) => {
+    db.query(
+      "SELECT e.id, e.first_name, e.last_name, r.title , d.dept_name, r.salary, e.manager_id  FROM employee as e INNER JOIN role as r ON r.id = e.role_id INNER JOIN department as d ON d.id = r.department_id ",
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.table(result);
+          resolve(`resolved`);
+        }
+      }
+    );
+  }).then((res) => {
+    res ? initQuestion() : console.log(err);
+  });
 };
+
 // Function queries all roles
 const viewAllroles = () => {
-  db.query(
-    "SELECT r.id, r.title, d.dept_name, r.salary FROM role as r JOIN department as d ON d.id = r.department_id",
-    (err, result) => {
-      err ? console.log(err) : console.table(`\n`, result);
-    }
-  );
-  return initQuestion();
+  new Promise((resolve, reject) => {
+    db.query(
+      "SELECT r.id, r.title, d.dept_name, r.salary FROM role as r JOIN department as d ON d.id = r.department_id",
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.table(result);
+          resolve(`resolved`);
+        }
+      }
+    );
+  }).then((res) => {
+    res ? initQuestion() : console.log(err);
+  });
 };
 
 // Function queries all departments
 const viewAlldepartments = () => {
-  console.log(`inside view department`);
-  db.query("SELECT * FROM department", (err, result) => {
-    err ? console.log(err) : console.table(`\n`, result);
+  new Promise((resolve, reject) => {
+    db.query("SELECT * FROM department", (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.table(result);
+        resolve(`resolved`);
+      }
+    });
+  }).then((res) => {
+    res ? initQuestion() : console.log(err);
   });
-  return initQuestion();
 };
+
 // Function adds department
 const addDepartment = () => {
   inquirer
@@ -110,7 +140,6 @@ const addRole = () => {
       let options = choices.map((obj) => {
         return obj.dept_name;
       });
-      console.log(`Options`, options);
       if (choices) {
         inquirer
           .prompt([
@@ -166,7 +195,87 @@ const addRole = () => {
 };
 
 // Function add employee
-const addEmployee = () => {};
+const addEmployee = () => {
+  //getting role data
+  new Promise((resolve, reject) => {
+    db.query(`SELECT id, title FROM role`, (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        let choices = result.map((el) => {
+          return { name: el["title"], value: el["id"] };
+        });
+        resolve(choices);
+      }
+    });
+  })
+    .then((roles) => {
+      return new Promise((resolve, reject) => {
+        db.query(
+          "SELECT first_name, last_name, id FROM employee",
+          (err, result) => {
+            if (err) {
+              console.log(err);
+            } else {
+              let employees = result.map((el) => {
+                return {
+                  name: `${el.first_name} ${el.last_name}`,
+                  value: `${el.id}`,
+                };
+              });
+              resolve({ roles: roles, employees: employees });
+            }
+          }
+        );
+      });
+    })
+    .then((response) => {
+      inquirer
+        .prompt([
+          {
+            type: "input",
+            name: "first_name",
+            message: "What is employee's first name ? ",
+          },
+          {
+            type: "input",
+            name: "last_name",
+            message: "What is employee's last name ? ",
+          },
+          {
+            type: "list",
+            name: "role_id",
+            choices: response.roles,
+            message: "What role would you like to assign to the employee ?",
+          },
+          {
+            type: "list",
+            name: "manager_id",
+            choices: [...response.employees, { name: "None", value: null }],
+            message: "Who's is the employee's manager ? ",
+          },
+        ])
+        .then((response) => {
+          const { first_name, last_name, role_id, manager_id } = response;
+          return new Promise((resolve, reject) => {
+            db.query(
+              "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES(?,?,?,?)",
+              [first_name, last_name, role_id, manager_id],
+              (err, result) => {
+                err
+                  ? console.log(err)
+                  : resolve(`Employee added to database successfully`);
+              }
+            );
+          });
+        })
+        .then((response) => {
+          console.table(response);
+          initQuestion();
+        });
+    });
+};
+
 // Function update employee role
 const updateEmployeeRole = () => {
   //getting role data
@@ -238,8 +347,6 @@ const updateEmployeeRole = () => {
         });
     });
 };
-// module.exports = questions;
-initQuestion();
 
 function deconstruct(arr, emptArr = []) {
   for (let title of arr) {
@@ -247,3 +354,5 @@ function deconstruct(arr, emptArr = []) {
   }
   return emptArr;
 }
+
+module.exports = initQuestion;

@@ -1,6 +1,2 @@
-const questions = require("./scripts/questions");
-const inquirer = require("inquirer");
-const mysql2 = require("mysql2");
-
-console.log(questions);
-
+const initFunc = require("./scripts/questions"); // The inquirer prompts live inside script. Hence has been imported as a module
+initFunc();
