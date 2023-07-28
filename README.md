@@ -5,6 +5,12 @@
 All applications rely extensively on storage systems to persist data. In this particular scenario, a company's requirement to track and manage employee information using a database makes this command-line application a valuable tool.
 This tool offers businesses a cost-effective and efficient alternative to expensive high-end market tools. It enables them to easily manage departments, company roles, and a comprehensive list of employees along with their salary details. Additionally, the tool simplifies the process of updating employee roles and assigning new roles, all without the frustrations associated with pricier options in the market.
 
+## Important Links
+
+[Live Demo](https://youtu.be/T3dyh5bHTu0)
+
+[Github](https://github.com/sucheta90/Employee-tracker)
+
 ## Table of Contents (Optional)
 
 If your README is long, add a table of contents to make it easy for users to find what they need.

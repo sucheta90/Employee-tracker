@@ -128,7 +128,6 @@ const addDepartment = () => {
 };
 // Function adds role
 const addRole = () => {
-  // let departments;
   let dept_id;
   let choices;
   db.query(`SELECT * FROM department`, (err, result) => {
@@ -163,12 +162,10 @@ const addRole = () => {
             (response) =>
               new Promise((resolve, reject) => {
                 const { title, salary, dept_name } = response;
-                console.log(dept_name);
                 db.query(
                   `SELECT id FROM department WHERE dept_name=?`,
                   dept_name,
                   (err, result) => {
-                    console.log(`result is ${JSON.stringify(result)}`);
                     err
                       ? console.log(err)
                       : resolve([result[0].id, title, salary]);
@@ -177,16 +174,20 @@ const addRole = () => {
               })
           )
           .then((input_values) => {
-            console.log(`input_values is ${input_values}`);
-            db.query(
-              `INSERT INTO role(department_id, title,salary) VALUES(?, ?, ?)`,
-              input_values,
-              (err, result) => {
-                err
-                  ? console.log(err)
-                  : console.log(`Added ${input_values[1]} to the database`);
-              }
-            );
+            new Promise((resolve, reject) => {
+              db.query(
+                `INSERT INTO role(department_id, title,salary) VALUES(?, ?, ?)`,
+                input_values,
+                (err, result) => {
+                  err
+                    ? console.log(err)
+                    : resolve(`Added ${input_values[1]} to the database`);
+                }
+              );
+            }).then((res) => {
+              console.log(res);
+              initQuestion();
+            });
           });
       }
     }
