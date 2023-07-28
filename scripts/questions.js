@@ -1,7 +1,6 @@
 const inquirer = require("inquirer");
-// const cTable = require("console.table");
-// const table = cTable.getTable;
 const db = require("./dbConnection");
+
 // Initial question
 const initQuestion = () => {
   inquirer
@@ -45,7 +44,7 @@ const initQuestion = () => {
           addEmployee();
           break;
         case "Quit":
-          break;
+          process.exit(``);
       }
     });
 };
@@ -356,3 +355,4 @@ function deconstruct(arr, emptArr = []) {
 }
 
 module.exports = initQuestion;
+// initFunc();

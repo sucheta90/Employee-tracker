@@ -19,6 +19,7 @@
   "homepage": "https://github.com/sucheta90/Employee-tracker#readme",
   "dependencies": {
     "console.table": "^0.10.0",
+    "figlet": "^1.6.0",
     "inquirer": "^8.2.4",
     "mysql2": "^3.5.2"
   }

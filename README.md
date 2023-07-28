@@ -24,7 +24,7 @@ The steps involved are:
 
 ## Usage
 
-This creates an Mysql database that can be used to store employee, roles and department data.
+This creates an Mysql database that can be used to store employee, roles and department data. Used `figlet` for the ASCII art.
 
 ## Credits
 
