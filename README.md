@@ -1,5 +1,9 @@
 # Employee Tracker
 
+<p align="center">
+<img src="./asset/Screenshot 2023-07-27 at 10.16.05 PM.png" width="50%">
+</p>
+
 ## Description
 
 All applications rely extensively on storage systems to persist data. In this particular scenario, a company's requirement to track and manage employee information using a database makes this command-line application a valuable tool.
